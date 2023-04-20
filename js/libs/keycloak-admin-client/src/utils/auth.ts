@@ -63,6 +63,7 @@ export const getToken = async (settings: Settings): Promise<TokenResponse> => {
     grant_type: credentials.grantType,
     client_id: credentials.clientId,
     totp: credentials.totp,
+    ...(credentials.clientSecret ? { client_secret: credentials.clientSecret } : {}),
     ...(credentials.offlineToken ? { scope: "offline_access" } : {}),
     ...(credentials.scopes ? { scope: credentials.scopes.join(" ") } : {}),
     ...(credentials.refreshToken
@@ -75,13 +76,6 @@ export const getToken = async (settings: Settings): Promise<TokenResponse> => {
 
   const options = settings.requestOptions ?? {};
   const headers = new Headers(options.headers);
-
-  if (credentials.clientSecret) {
-    headers.set(
-      "Authorization",
-      atob(credentials.clientId + ":" + credentials.clientSecret)
-    );
-  }
 
   headers.set("content-type", "application/x-www-form-urlencoded");
 
